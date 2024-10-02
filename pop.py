@@ -25,6 +25,36 @@ print("DataFrame columns:", data.columns.tolist())
 print(f"Number of rows in DataFrame: {len(data)}")
 print("DataFrame columns:", data.columns.tolist())
 
+# Function to create the MySQL table
+def create_table_if_not_exists():
+    try:
+        connection = mysql.connector.connect(**db_config)
+
+        if connection.is_connected():
+            cursor = connection.cursor()
+            # SQL statement to create a table
+            create_table_query = '''
+            CREATE TABLE IF NOT EXISTS courses (
+                Dept VARCHAR(50),
+                Course_Number VARCHAR(50),
+                Level VARCHAR(50),
+                Hours INT,
+                Name VARCHAR(255),
+                Description TEXT
+            )
+            '''
+            cursor.execute(create_table_query)
+            print("Table 'courses' created or already exists.")
+
+    except Error as e:
+        print(f"Error: {e}")
+
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+            print("MySQL connection is closed.")
+
 # Function to insert data into MySQL
 def insert_data_to_mysql(data):
     try:
@@ -46,6 +76,9 @@ def insert_data_to_mysql(data):
             cursor.close()
             connection.close()
             print("MySQL connection is closed.")
+
+# Create the table if it doesn't exist
+create_table_if_not_exists()
 
 # Call the function to insert data
 insert_data_to_mysql(data)
